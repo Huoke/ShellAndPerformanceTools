@@ -6,6 +6,16 @@ lsof(list open files) 是一个列出当前系统打开的文件。
 在终端下输入lsof即可显示系统打开的文件，因为 lsof 需要访问核心内存和各种文件，所以必须以 root 用户的身份运行它才能够充分地发挥其功能。
 直接输入lsof，输出如下：
 ```shell
-COMMAND    PID TID  USER   FD      TYPE DEVICE    SIZE              NODE NAME        init         1      root  cwd       DIR    0,2    4096  1688849860343691 /           init         1      root  rtd       DIR    0,2    4096  1688849860343691 /           init         1      root  txt       REG    0,2  591344  1970324837054349 /init       init         1      root  mem       REG    0,0                     79757 /init (path dev=0,2, inode=1970324837054349)                                                     init         1      root    3w      CHR   1,11          5629499534227761 /dev/kmsg   init         1      root    0u      CHR    1,3         13229323905415507 /dev/null   init         1      root    1u      CHR    1,3         13229323905415507 /dev/null   init         1      root    2u      CHR    1,3         13229323905415507 /dev/null   init         1      root    4u      CHR  10,50         11540474045159737 /dev/lxss   init         1      root    5u  unknown                                  /unknown (stat: Operation not permitted)                                                        
+COMMAND    PID TID  USER   FD      TYPE DEVICE    SIZE              NODE NAME        
+init         1      root  cwd       DIR    0,2    4096  1688849860343691 /           
+init         1      root  rtd       DIR    0,2    4096  1688849860343691 /           
+init         1      root  txt       REG    0,2  591344  1970324837054349 /init       
+init         1      root  mem       REG    0,0                     79757 /init (path dev=0,2, inode=1970324837054349)
+init         1      root    3w      CHR   1,11          5629499534227761 /dev/kmsg   
+init         1      root    0u      CHR    1,3         13229323905415507 /dev/null   
+init         1      root    1u      CHR    1,3         13229323905415507 /dev/null   
+init         1      root    2u      CHR    1,3         13229323905415507 /dev/null   
+init         1      root    4u      CHR  10,50         11540474045159737 /dev/lxss   
+init         1      root    5u  unknown                                  /unknown (stat: Operation not permitted)
 ```
 lsof输出各列信息的意义如下：
