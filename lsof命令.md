@@ -2,24 +2,9 @@
 # 简介
 lsof(list open files) 是一个列出当前系统打开的文件。
 在linux环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等。系统在后台都为该应用程序分配了一个文件描述符，无论这个文件的本质如何，该文件描述符为应用程序与基础操作系统之间的交互提供了通用接口。 因为应用程序打开文件的描述符列表提供了大量关于这个应用程序本身的信息，因此通过lsof工具能够查看这个列表，这对系统监测以及排错将是很有帮助的。
-# 输出信息含义
-在终端下输入lsof即可显示系统打开的文件，因为 lsof 需要访问核心内存和各种文件，所以必须以 root 用户的身份运行它才能够充分地发挥其功能。
-直接输入lsof，输出如下：
-```Shell
-COMMAND     PID        USER   FD      TYPE             DEVICE SIZE/OFF       NODE NAME 
-init          1        root  cwd       DIR                8,1     4096          2 / 
-init          1        root  rtd       DIR                8,1     4096          2 / 
-init          1        root  txt       REG                8,1   150584     654127 /sbin/init 
-udevd       415        root    0u      CHR                1,3      0t0       6254 /dev/null 
-udevd       415        root    1u      CHR                1,3      0t0       6254 /dev/null 
-udevd       415        root    2u      CHR                1,3      0t0       6254 /dev/null 
-udevd       690        root  mem       REG                8,1    51736     302589 /lib/x86_64-linux-gnu/libnss_files-2.13.so 
-syslogd    1246      syslog    2w      REG                8,1    10187     245418 /var/log/auth.log 
-syslogd    1246      syslog    3w      REG                8,1    10118     245342 /var/log/syslog 
-dd         1271        root    0r      REG                0,3        0 4026532038 /proc/kmsg 
-dd         1271        root    1w     FIFO               0,15      0t0        409 /run/klogd/kmsg 
-dd         1271        root    2u      CHR                1,3      0t0       6254 /dev/null
-```
+
+
+
 每行显示一个打开的文件，若不指定条件默认将显示所有进程打开的所有文件。
 lsof输出各列信息的意义如下：
 - COMMAND：进程的名称 
@@ -83,8 +68,23 @@ squid   1230 root  mem    REG    0,0                    123502 /lib/x86_64-linux
 squid   1230 root  mem    REG    0,0                    123492 /lib/x86_64-linux-gnu/libnss_compat-2.27.so (path dev=0,2, inode=1970324837098084)
 squid   1230 root  mem    REG    0,0                    123497 /lib/x86_64-linux-gnu/libnss_files-2.27.so (path dev=0,2, inode=1970324837098089)
 squid   1230 root  mem    REG    0,0                    141466 /usr/lib/x86_64-linux-gnu/libicudata.so.60.2 (path dev=0,2, inode=3659174697379994)
-squid   1230 root  mem    REG    0,0                    123474 /lib/x86_64-linux-gnu/libmnl.so.0.2.0 (path dev=0,2, inode=9570149208285778)
-squid   1230 root  mem    REG    0,0                    141682 /usr/lib/x86_64-linux-gnu/libnfnetlink.so.0.2.0 (path dev=0,2, inode=2814749767248242)
-squid   1230 root  mem    REG    0,0                    123438 /lib/x86_64-linux-gnu/libresolv-2.27.so (path dev=0,2, inode=3659174697361966)
-squid   1230 root  mem    REG    0,0                    123250 /lib/x86_64-linux-gnu/
+squid   1230 root    0u   CHR    1,3         13229323905415507 /dev/null
+squid   1230 root    1u   CHR    1,3         13229323905415507 /dev/null
+squid   1230 root    2u   CHR    1,3         13229323905415507 /dev/null
+squid   1230 root    3u   REG    0,2    3686 19703248369908335 /var/log/squid/cache.log
+squid   1230 root    4u   REG    0,9       8  5910974511282951 /run/shm/squid-cf__metadata.shm
+squid   1230 root    5u   REG    0,9    8216  4222124651141627 /run/shm/squid-cf__queues.shm
+squid   1230 root    6u   REG    0,9      44  2251799814167036 /run/shm/squid-cf__readers.shm
+squid   1230 root    7u   CHR    1,3         13229323905415507 /dev/null
+squid   1230 root    3u   IPv4   43816  0t0                TCP localhost:13579
+squid   1230 root    4u   0000   0,9    0                  TCP anon_inode
 ```
+# 输出信息含义
+在终端下输入lsof即可显示系统打开的文件，因为 lsof 需要访问核心内存和各种文件，所以必须以 root 用户的身份运行它才能够充分地发挥其功能。
+直接输入lsof，输出如下：
+- COMMAND，执行程序所使用的的终端命令(默认仅显示前9个字符)
+- PID，文件描述符所属进程的PID。
+- USER，拥有该文件描述符的用户的用户名。
+- FD，文件描述符的描述。其中cwd表示进程的工作目录， rtd表示用户的根目录，txt表示进程运行的程序代码，mem表示直接映射到内存中的文件(本例中都是动态库)。有的FD是以 "数字 + 访问权限" 表示的，其中数字是文件描述符的具体数值，访问权限包括r（可读）、w（可写）和 u（可读可写）。如果出现，0u、1u、2u分别表示标准输入、标准输出和标准错误输出；**3u表示处于LISTEN状态的监听socket**；**4u表示epoll内核事件表对应的文件描述符**。
+- TYPE，文件描述符的类型。其中DIR是目录，REG是普通文件，CHR是字符设备文件，IPv4是IPv4类型的socket文件描述符，0000是未知类型。更多文件描述符的类型参考lsof命令的man手册。
+- DEVICE，文件所属设备。对于字符设备和块设备，其表示方法是 “主设备号，次设备号” 。由
