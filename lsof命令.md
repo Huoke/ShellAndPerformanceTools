@@ -5,7 +5,7 @@ lsof(list open files) 是一个列出当前系统打开的文件。
 # 输出信息含义
 在终端下输入lsof即可显示系统打开的文件，因为 lsof 需要访问核心内存和各种文件，所以必须以 root 用户的身份运行它才能够充分地发挥其功能。
 直接输入lsof，输出如下：
-```shell
+```Shell
 COMMAND    PID TID  USER   FD      TYPE DEVICE    SIZE              NODE NAME        
 init         1      root  cwd       DIR    0,2    4096  1688849860343691 /           
 init         1      root  rtd       DIR    0,2    4096  1688849860343691 /           
