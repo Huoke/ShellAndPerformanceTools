@@ -37,3 +37,54 @@ FD 列中的文件描述符cwd 值表示应用程序的当前工作目录，这�
 其次数值表示应用程序的文件描述符，这是打开该文件时返回的一个整数。如上的最后一行文件/dev/initctl，其文件描述符为 10。u 表示该文件被打开并处于读取/写入模式，而不是只读(R)或只写 (w) 模式。同时还有大写 的W 表示该应用程序具有对整个文件的写锁。该文件描述符用于确保每次只能打开一个应用程序实例。初始打开每个应用程序时，都具有三个文件描述符，从 0 到 2，分别表示标准输入、输出和错误流。所以大多数应用程序所打开的文件的 FD 都是从 3 开始。
 
 与 FD 列相比，Type 列则比较直观。文件和目录分别称为 REG 和 DIR。而CHR 和 BLK，分别表示字符和块设备；或者 UNIX、FIFO 和 IPv4，分别表示 UNIX 域套接字、先进先出 (FIFO) 队列和网际协议 (IP) 套接字。
+
+# lsof命令常用的选项包括
+- -i， 显示socket文件描述符。该选项的使用方法是:
+```Shell
+lsof -i [46] [protocol][@hostname][ipaddr][:service|port]
+```
+其中，4表示IPv4协议，6表示IPv6协议；protocol指定传输层协议，可以是TCP或者UDP；hostname指定主机名； ipaddr指定主机的IP地址； service指定服务名； port指定端口号。比如，要显示所有连接到主机 192.168.1.108 的ssh服务的socket文件描述符，可以使用命令：
+```Shell
+lsof -i@192.168.1.108:22
+```
+如果-i选项后不指定任何参数，则lsof命令将显示所有socket文件描述符。
+- -u， 显示指定用户启动的所有进程打开的所有文件描述符。
+- -c， 显示指定的命令打开的所有文件描述符。比如要查看websrv程序打开了那些文件描述符，可以使用如下命令。
+```Shell
+lsof -c websrv
+```
+- -p， 显示指定进程打开的所有文件描述符。
+- -t， 仅显示打开了目录文件描述符的进程的PID。
+我们还可以直接将文件名作为lsof命令的参数，以查看那些进程打开了该文件。如下所示：
+```Shell
+root@sus:/opt# lsof /opt
+COMMAND  PID USER   FD   TYPE DEVICE SIZE             NODE NAME                      
+bash      20 root  cwd    DIR    0,2 4096 1407374883676941 /opt                      
+bash     320 root  cwd    DIR    0,2 4096 1407374883676941 /opt                      
+squid   1230 root  cwd    DIR    0,2 4096 1407374883676941 /opt                      
+lsof    1296 root  cwd    DIR    0,2 4096 1407374883676941 /opt                      
+lsof    1297 root  cwd    DIR    0,2 4096 1407374883676941 /opt                      
+```
+
+用lsof命令查看squid服务器打开的文件描述符：
+```Shell             
+root@sus:/opt# ps -ef | grep -v grep | grep squid                                   
+root      1230     1  0 Aug09 ?        00:00:00 squid                                
+proxy     1232  1230  0 Aug09 ?        00:00:00 (squid-1)                            
+proxy     1233  1232  0 Aug09 ?        00:00:00 (logfile-daemon) /var/log/squid/access.log                              
+root@sus:/opt# lsof -p 1230                                                         
+COMMAND  PID USER   FD   TYPE DEVICE    SIZE              NODE NAME                  
+squid   1230 root  cwd    DIR    0,2    4096  1407374883676941 /opt                  
+squid   1230 root  rtd    DIR    0,2    4096  1688849860343691 /                     
+squid   1230 root  txt    REG    0,2 6111144  1407374884035128 /usr/sbin/squid       
+squid   1230 root  mem    REG    0,0                    123507 /lib/x86_64-linux-gnu/libnss_systemd.so.2 (path dev=0,2, inode=1970324837098099)                           
+squid   1230 root  mem    REG    0,0                    123490 /lib/x86_64-linux-gnu/libnsl-2.27.so (path dev=0,2, inode=1970324837098082)                                
+squid   1230 root  mem    REG    0,0                    123502 /lib/x86_64-linux-gnu/libnss_nis-2.27.so (path dev=0,2, inode=1970324837098094)
+squid   1230 root  mem    REG    0,0                    123492 /lib/x86_64-linux-gnu/libnss_compat-2.27.so (path dev=0,2, inode=1970324837098084)
+squid   1230 root  mem    REG    0,0                    123497 /lib/x86_64-linux-gnu/libnss_files-2.27.so (path dev=0,2, inode=1970324837098089)
+squid   1230 root  mem    REG    0,0                    141466 /usr/lib/x86_64-linux-gnu/libicudata.so.60.2 (path dev=0,2, inode=3659174697379994)
+squid   1230 root  mem    REG    0,0                    123474 /lib/x86_64-linux-gnu/libmnl.so.0.2.0 (path dev=0,2, inode=9570149208285778)
+squid   1230 root  mem    REG    0,0                    141682 /usr/lib/x86_64-linux-gnu/libnfnetlink.so.0.2.0 (path dev=0,2, inode=2814749767248242)
+squid   1230 root  mem    REG    0,0                    123438 /lib/x86_64-linux-gnu/libresolv-2.27.so (path dev=0,2, inode=3659174697361966)
+squid   1230 root  mem    REG    0,0                    123250 /lib/x86_64-linux-gnu/
+```
