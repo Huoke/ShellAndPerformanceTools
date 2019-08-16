@@ -83,3 +83,20 @@ int1 -le int2　　　　int1小于等于int2为真
 [ STRING1 &lt; STRING2 ] 如果 “STRING1” sorts before “STRING2” lexicographically in the current locale则为真。 [ STRING1 &gt; STRING2 ]  如果 “STRING1” sorts after “STRING2” lexicographically in the current locale则为真。  
 [ ARG1 OP ARG2 ] “OP” is one of -eq, -ne, -lt, -le, -gt or -ge. These arithmetic binary operators return true if “ARG1” is equal to, not equal to, less than, less than or equal to, greater than, or greater than or equal to “ARG2”, respectively. “ARG1” and “ARG2” are integers.
 ```
+# 4、shell 中的$0 $1 $* $@ $# $$ $? $() $(())
+```Shell
+$0: 脚本本身文件名称
+$1: 命令行第一个参数，$2为第二个，以此类推
+$*: 所有参数列表
+$@: 所有参数列表
+$#: 参数个数
+$$: 脚本运行时的PID
+$?: 脚本退出码
+
+∗与@的区别
+
+当命令行为test.sh 1 2 3
+"$*“表示"1 2 3”
+"$@“表示"1” “2” “3”
+二者没有被引号括起来时是一样的都为"1 2 3"，只有当被引号括起来后才表现出差异
+```
